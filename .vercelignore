@@ -1,0 +1,13 @@
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+tests/
+examples/
+static/
+.streamlit/
+app.py
+cli.py
+mcp_server.py
+data/structures/1BVK.pdb
+data/structures/1FDL.pdb

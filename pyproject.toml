@@ -13,14 +13,18 @@ authors = [
     { name = "High School Science Fair Project" }
 ]
 dependencies = [
+    "numpy>=1.26.0",
+    "requests>=2.31.0",
+]
+
+[project.optional-dependencies]
+local = [
     "streamlit>=1.38.0",
     "biopython>=1.83",
     "scipy>=1.11.0",
-    "numpy>=1.26.0",
     "py3Dmol>=2.1.0",
     "stmol>=0.0.9",
-    "fastmcp>=2.0.0,<3.0.0",
-    "requests>=2.31.0",
+    "mcp>=2.0.0",
     "plotly>=5.22.0",
     "pytest>=8.0.0",
 ]
@@ -37,6 +41,7 @@ include = [
     "cli.py",
     "mcp_server.py",
     "static/**",
+    "public/**",
     ".streamlit/**",
 ]
 
