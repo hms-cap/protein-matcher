@@ -1,0 +1,17 @@
+{
+  "name": "LockKey-Explorer: 3D Protein Puzzle Workbench",
+  "short_name": "LockKey3D",
+  "description": "High School Science Fair 3D Protein Lock-and-Key Puzzle Explorer",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#8b5cf6",
+  "icons": [
+    {
+      "src": "/app/static/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

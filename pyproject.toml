@@ -1,0 +1,45 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lockkey-explorer"
+version = "1.0.0"
+description = "Interactive 3D Protein Lock-and-Key Puzzle Explorer & FastMCP Server for High School Science Fairs"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "High School Science Fair Project" }
+]
+dependencies = [
+    "streamlit>=1.38.0",
+    "biopython>=1.83",
+    "scipy>=1.11.0",
+    "numpy>=1.26.0",
+    "py3Dmol>=2.1.0",
+    "stmol>=0.0.9",
+    "fastmcp>=2.0.0,<3.0.0",
+    "requests>=2.31.0",
+    "plotly>=5.22.0",
+    "pytest>=8.0.0",
+]
+
+[project.scripts]
+lockkey-explorer = "cli:main"
+lockkey-mcp = "mcp_server:main"
+lockkey-download = "data.download_examples:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["core", "data", "examples"]
+include = [
+    "app.py",
+    "cli.py",
+    "mcp_server.py",
+    "static/**",
+    ".streamlit/**",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

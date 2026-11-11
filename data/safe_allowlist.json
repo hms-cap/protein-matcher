@@ -1,0 +1,163 @@
+{
+  "classroom_presets": {
+    "3OGO": {
+      "id": "3OGO",
+      "source": "rcsb",
+      "title": "1. The Jellyfish Glow Switch (PDB: 3OGO)",
+      "short_name": "Glowing Jellyfish GFP + Enhancer (PDB: 3OGO)",
+      "lock_name": "Green Fluorescent Protein (GFP, Chain A)",
+      "key_name": "GFP-Enhancer Helper Protein (Chain B)",
+      "lock_chain": "A",
+      "key_chain": "B",
+      "story": "GFP makes jellyfish glow bright green; when the Enhancer Key snaps into GFP's side pocket, its fluorescence becomes 4x brighter!",
+      "what_students_see": "A dramatic + / - salt bridge (Arg35 to Glu142) and a snug hydrophobic groove next to the glowing chromophore.",
+      "featured_contact": {
+        "key_chain": "B",
+        "key_resnum": 35,
+        "key_resname": "ARG",
+        "lock_chain": "A",
+        "lock_resnum": 142,
+        "lock_resname": "GLU",
+        "description": "Key Arg35 (+) forms an electrostatic salt bridge with Lock Glu142 (-)"
+      }
+    },
+    "1MEL": {
+      "id": "1MEL",
+      "source": "rcsb",
+      "title": "2. Egg-White Defense (PDB: 1MEL)",
+      "short_name": "Egg-White Lysozyme + Partner VHH (PDB: 1MEL)",
+      "lock_name": "Hen Egg-White Lysozyme (Chain A)",
+      "key_name": "Camelid VHH Partner (Chain M)",
+      "lock_chain": "A",
+      "key_chain": "M",
+      "story": "Lysozyme protects bird eggs and human tears by breaking down bacterial cell walls; the partner key has a long finger loop that reaches right into the deep canyon.",
+      "what_students_see": "A deep purple concave canyon on Lysozyme filled by a protruding golden convex loop on the partner protein.",
+      "featured_contact": {
+        "key_chain": "M",
+        "key_resnum": 103,
+        "key_resname": "TYR",
+        "lock_chain": "A",
+        "lock_resnum": 52,
+        "lock_resname": "ASP",
+        "description": "Key Loop Tyr103 reaches deep into the Lysozyme Asp52/Glu35 catalytic cleft"
+      }
+    },
+    "6EQE": {
+      "id": "6EQE",
+      "source": "rcsb",
+      "title": "3. Recycling Plastic Bottles (PDB: 6EQE)",
+      "short_name": "Plastic-Eating Enzyme PETase (PDB: 6EQE)",
+      "lock_name": "Ideonella sakaiensis PETase Enzyme (Chain A)",
+      "key_name": "PET Plastic Groove Partner Patch (Virtual / Subdomain)",
+      "lock_chain": "A",
+      "key_chain": "A",
+      "story": "This harmless environmental enzyme eats single-use PET water bottles and turns them back into recyclable building blocks.",
+      "what_students_see": "Students slide the AlphaFold pLDDT filter and inspect the greasy hydrophobic cleft (Trp159, Ser160, Trp185) where plastic chains lock in.",
+      "featured_contact": {
+        "key_chain": "A",
+        "key_resnum": 185,
+        "key_resname": "TRP",
+        "lock_chain": "A",
+        "lock_resnum": 160,
+        "lock_resname": "SER",
+        "description": "Wobbly Trp185 aromatic clamp alongside catalytic Ser160 in the plastic-binding cleft"
+      }
+    },
+    "1A3N": {
+      "id": "1A3N",
+      "source": "rcsb",
+      "title": "4. Carrying Oxygen in Blood (PDB: 1A3N)",
+      "short_name": "Human Hemoglobin Alpha + Beta Subunits (PDB: 1A3N)",
+      "lock_name": "Human Hemoglobin Alpha-Subunit (Chain A)",
+      "key_name": "Human Hemoglobin Beta-Subunit (Chain B)",
+      "lock_chain": "A",
+      "key_chain": "B",
+      "story": "Red blood cells carry oxygen from our lungs to our muscles using four interlocking protein puzzle pieces (alpha1, alpha2, beta1, beta2).",
+      "what_students_see": "Self-complementary sticky patches and salt-bridge latches that hold the four oxygen-carrying subunits together.",
+      "featured_contact": {
+        "key_chain": "B",
+        "key_resnum": 40,
+        "key_resname": "ARG",
+        "lock_chain": "A",
+        "lock_resnum": 94,
+        "lock_resname": "ASP",
+        "description": "Key Beta-Arg40 (+) latches onto Lock Alpha-Asp94 (-) across the subunit interface"
+      }
+    },
+    "AF-A0A0K8P6T7": {
+      "id": "AF-A0A0K8P6T7",
+      "uniprot_id": "A0A0K8P6T7",
+      "fallback_pdb": "6EQE",
+      "source": "alphafold",
+      "title": "AlphaFold Plastic-Recycling PETase (AF-A0A0K8P6T7)",
+      "short_name": "AlphaFold PETase (AF-A0A0K8P6T7)",
+      "lock_name": "AlphaFold PETase Enzyme (Chain A)",
+      "key_name": "PET Substrate-Binding Groove",
+      "lock_chain": "A",
+      "key_chain": "A",
+      "story": "AlphaFold predicted structure of PETase including the low-confidence N-terminal signal peptide tail that students can trim away using the pLDDT slider!",
+      "what_students_see": "A floppy orange/red low-confidence N-terminal tail (pLDDT < 60) attached to a rock-solid dark-blue catalytic core (pLDDT > 90).",
+      "featured_contact": {
+        "key_chain": "A",
+        "key_resnum": 185,
+        "key_resname": "TRP",
+        "lock_chain": "A",
+        "lock_resnum": 160,
+        "lock_resname": "SER",
+        "description": "Hydrophobic plastic-binding clamp Trp185 and active Ser160"
+      }
+    },
+    "1BVK": {
+      "id": "1BVK",
+      "source": "rcsb",
+      "title": "Hen Egg-White Lysozyme + Antibody Fv (PDB: 1BVK)",
+      "short_name": "Egg-White Lysozyme (PDB: 1BVK)",
+      "lock_name": "Hen Egg-White Lysozyme (Chain C)",
+      "key_name": "Fv Antibody Partner (Chain A)",
+      "lock_chain": "C",
+      "key_chain": "A",
+      "story": "Classic AP/IB Biology egg-white lysozyme bound to a natural partner.",
+      "what_students_see": "Complementary surface hills and valleys locking together.",
+      "featured_contact": {
+        "key_chain": "A",
+        "key_resnum": 50,
+        "key_resname": "TYR",
+        "lock_chain": "C",
+        "lock_resnum": 101,
+        "lock_resname": "ASP",
+        "description": "Interface contact between Lysozyme Asp101 and partner Tyr50"
+      }
+    },
+    "1FDL": {
+      "id": "1FDL",
+      "source": "rcsb",
+      "title": "Hen Egg-White Lysozyme + D1.3 Fab (PDB: 1FDL)",
+      "short_name": "Egg-White Lysozyme (PDB: 1FDL)",
+      "lock_name": "Hen Egg-White Lysozyme (Chain Y)",
+      "key_name": "Fab Partner (Chain H)",
+      "lock_chain": "Y",
+      "key_chain": "H",
+      "story": "Classic textbook lock-and-key complex of egg-white lysozyme.",
+      "what_students_see": "Tightly packed interface with zero atomic overlaps.",
+      "featured_contact": {
+        "key_chain": "H",
+        "key_resnum": 101,
+        "key_resname": "TYR",
+        "lock_chain": "Y",
+        "lock_resnum": 121,
+        "lock_resname": "GLN",
+        "description": "Hydrogen-bonding and shape lock at Lysozyme Gln121"
+      }
+    }
+  },
+  "allowed_ids": [
+    "3OGO",
+    "1MEL",
+    "6EQE",
+    "1A3N",
+    "AF-A0A0K8P6T7",
+    "A0A0K8P6T7",
+    "1BVK",
+    "1FDL"
+  ]
+}
