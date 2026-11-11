@@ -16,6 +16,7 @@ from mcp_server import (
     match_partner_key,
     simulate_what_if_swap,
 )
+from api.index import build_vercel_analysis_payload
 
 
 def test_biosecurity_allowlist_blocks_unapproved_proteins() -> None:
@@ -110,3 +111,18 @@ def test_mcp_simulate_what_if_swap_tool() -> None:
     assert out["original_amino_acid"] == "ARG"
     assert out["new_amino_acid"] == "ASP"
     assert out["new_score"] < out["baseline_score"]
+
+
+def test_vercel_serverless_api_payload() -> None:
+    payload = build_vercel_analysis_payload(
+        preset_id="3OGO",
+        min_plddt=65.0,
+        pocket_id=1,
+        paint_mode="Magnet Charge Mode",
+        swap_choice="Negative (-) Aspartate [ASP]",
+    )
+    assert payload["preset_id"] == "3OGO"
+    assert payload["what_if"]["badge_status"] == "degraded"
+    assert "$3Dmol.createViewer" in payload["viewer_html"]
+    assert len(payload["heatmap"]["z_matrix"]) > 0
+

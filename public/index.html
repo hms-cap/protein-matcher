@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LockKey-Explorer | 3D Protein Puzzle Workbench</title>
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  <meta name="theme-color" content="#8b5cf6" />
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+  <style>
+    :root {
+      --bg-main: #0f172a;
+      --bg-panel: #1e293b;
+      --border: #334155;
+      --accent: #8b5cf6;
+      --accent-hover: #7c3aed;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg-main); color: var(--text-main); display: flex; min-height: 100vh;
+    }
+    /* Sidebar */
+    .sidebar {
+      width: 340px; min-width: 340px; background: var(--bg-panel); border-right: 1px solid var(--border);
+      padding: 20px 18px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto;
+    }
+    .sidebar h2 { margin: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
+    .sidebar h3 { margin: 6px 0 2px; font-size: 0.95rem; color: #e2e8f0; }
+    .caption { font-size: 0.8rem; color: var(--text-muted); margin-top: -6px; }
+    .preset-btn {
+      width: 100%; text-align: left; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: #0f172a; color: var(--text-main); font-size: 0.86rem; font-weight: 600; cursor: pointer;
+      transition: all 0.15s ease; margin-bottom: 6px;
+    }
+    .preset-btn:hover { border-color: var(--accent); background: rgba(139, 92, 246, 0.12); }
+    .preset-btn.active { border-color: var(--accent); background: rgba(139, 92, 246, 0.25); box-shadow: 0 0 0 1px var(--accent); }
+    label { font-size: 0.82rem; color: #cbd5e1; display: block; margin-bottom: 4px; }
+    select, input[type="range"] {
+      width: 100%; background: #0f172a; color: var(--text-main); border: 1px solid var(--border);
+      border-radius: 6px; padding: 8px; font-size: 0.84rem;
+    }
+    hr { border: none; border-top: 1px solid var(--border); margin: 4px 0; }
+    /* Main Content */
+    .main-stage {
+      flex: 1; padding: 20px 26px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px;
+    }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .top-bar h1 { margin: 0; font-size: 1.45rem; }
+    .story-banner {
+      background: rgba(139, 92, 246, 0.12); border-left: 4px solid var(--accent);
+      padding: 10px 16px; border-radius: 0 10px 10px 0; font-size: 0.92rem; line-height: 1.45;
+    }
+    .controls-bar {
+      display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between;
+      background: var(--bg-panel); padding: 10px 16px; border-radius: 10px; border: 1px solid var(--border);
+    }
+    .paint-group { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .paint-pill {
+      padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); background: #0f172a;
+      color: #cbd5e1; font-size: 0.82rem; cursor: pointer; font-weight: 600;
+    }
+    .paint-pill.active { background: var(--accent); color: white; border-color: var(--accent); }
+    .toggle-group { display: flex; gap: 16px; align-items: center; font-size: 0.85rem; }
+    .toggle-group label { display: flex; align-items: center; gap: 6px; margin: 0; cursor: pointer; }
+    #viewer-frame {
+      width: 100%; height: 520px; border: none; border-radius: 12px; background: #0f172a;
+    }
+    .what-if-banner {
+      padding: 12px 16px; border-radius: 10px; font-size: 0.92rem; line-height: 1.45;
+    }
+    .what-if-banner.degraded { background: rgba(239, 68, 68, 0.18); border: 1px solid #ef4444; color: #fca5a5; }
+    .what-if-banner.improved { background: rgba(34, 197, 94, 0.18); border: 1px solid #22c55e; color: #86efac; }
+    .what-if-banner.neutral { background: rgba(56, 189, 248, 0.14); border: 1px solid #38bdf8; color: #bae6fd; }
+    .metrics-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+    }
+    .metric-card {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .metric-title { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .metric-value { font-size: 1.7rem; font-weight: 800; margin: 4px 0; }
+    .metric-sub { font-size: 0.78rem; color: #38bdf8; }
+    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .chart-box {
+      background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px; padding: 12px;
+    }
+    .chart-box h4 { margin: 0 0 8px 6px; font-size: 0.95rem; }
+    .export-bar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .export-btn {
+      padding: 10px 16px; border-radius: 8px; border: 1px solid var(--accent); background: rgba(139, 92, 246, 0.2);
+      color: white; font-weight: 600; font-size: 0.86rem; cursor: pointer;
+    }
+    .export-btn:hover { background: var(--accent); }
+    @media (max-width: 1024px) {
+      body { flex-direction: column; }
+      .sidebar { width: 100%; min-width: 0; border-right: none; border-bottom: 1px solid var(--border); }
+      .metrics-grid, .charts-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar">
+    <h2>🧩 Protein Puzzle</h2>
+    <div class="caption">100% Classroom-Safe High School Biology Presets</div>
+    <div>
+      <button class="preset-btn active" onclick="selectPreset('3OGO', this)">🟢 Glowing Jellyfish GFP + Enhancer (3OGO)</button>
+      <button class="preset-btn" onclick="selectPreset('1MEL', this)">🥚 Egg-White Lysozyme + Partner VHH (1MEL)</button>
+      <button class="preset-btn" onclick="selectPreset('6EQE', this)">♻️ Plastic-Eating Enzyme PETase (6EQE)</button>
+      <button class="preset-btn" onclick="selectPreset('1A3N', this)">🩸 Human Hemoglobin Alpha + Beta (1A3N)</button>
+    </div>
+
+    <hr />
+    <h3>🔬 AlphaFold Confidence Filter</h3>
+    <div>
+      <label>Trim Uncertain Loops (Min pLDDT: <b id="plddt-val">65</b>)</label>
+      <input type="range" id="plddt-slider" min="0" max="90" step="5" value="65" onchange="refreshAnalysis()" oninput="document.getElementById('plddt-val').innerText = this.value" />
+    </div>
+
+    <h3>🗝️ Keyhole Selector</h3>
+    <div>
+      <label>Select Candidate Keyhole on Lock:</label>
+      <select id="pocket-select" onchange="refreshAnalysis()">
+        <option value="1">Pocket #1 (Main Active Groove)</option>
+        <option value="2">Pocket #2 (Secondary Surface Groove)</option>
+        <option value="3">Pocket #3 (Auxiliary Surface Pocket)</option>
+      </select>
+    </div>
+
+    <hr />
+    <h3>⚡ "What-If" Salt-Bridge Tester</h3>
+    <div>
+      <label>1. Pick Interface Amino Acid:</label>
+      <select id="contact-select" onchange="onContactOrSwapChange()"></select>
+    </div>
+    <div>
+      <label>2. Swap Amino Acid Property To:</label>
+      <select id="swap-select" onchange="onContactOrSwapChange()"></select>
+    </div>
+  </aside>
+
+  <!-- MAIN STAGE -->
+  <main class="main-stage">
+    <div class="top-bar">
+      <h1 id="page-title">🧬 LockKey-Explorer — Loading 3D Molecular Puzzle...</h1>
+      <div class="export-bar">
+        <button class="export-btn" onclick="downloadStandaloneHTML()">📥 Export Standalone 3D Model (.html)</button>
+        <button class="export-btn" onclick="downloadTrimmedPDB()">🧬 Export Coordinates (.pdb)</button>
+      </div>
+    </div>
+
+    <div class="story-banner" id="story-banner">
+      Loading classroom protein story and 3D surface fingerprint...
+    </div>
+
+    <div class="controls-bar">
+      <div class="paint-group">
+        <span style="font-size:0.84rem; font-weight:600; margin-right:4px;">🎨 3D Paint Mode:</span>
+        <button class="paint-pill active" onclick="selectPaintMode('Puzzle Shape Mode', this)">Puzzle Shape Mode</button>
+        <button class="paint-pill" onclick="selectPaintMode('Magnet Charge Mode', this)">Magnet Charge Mode</button>
+        <button class="paint-pill" onclick="selectPaintMode('Oil-vs-Water Mode', this)">Oil-vs-Water Mode</button>
+        <button class="paint-pill" onclick="selectPaintMode('AlphaFold Confidence Mode', this)">AlphaFold Confidence Mode</button>
+      </div>
+      <div class="toggle-group">
+        <label><input type="checkbox" id="ghost-toggle" checked onchange="refreshAnalysis()" /> 👻 Show "Ghost Key" Mold</label>
+        <label><input type="checkbox" id="partner-toggle" checked onchange="refreshAnalysis()" /> 🗝️ Show Partner "Key" Protein</label>
+      </div>
+    </div>
+
+    <iframe id="viewer-frame" title="3D Molecular Puzzle Viewer"></iframe>
+
+    <div id="what-if-banner" class="what-if-banner neutral">
+      🔬 <b>What-If Classroom Experiment:</b> Evaluating interface forces...
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-title">Overall Puzzle Fit (0–100)</div>
+        <div class="metric-value" id="m-total">--</div>
+        <div class="metric-sub" id="m-total-sub">Optimal Classroom Lock</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">Contact Surface Area</div>
+        <div class="metric-value" id="m-area">--</div>
+        <div class="metric-sub">Buried Keyhole Skin</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">Salt Bridges Formed</div>
+        <div class="metric-value" id="m-sb">--</div>
+        <div class="metric-sub" id="m-sb-sub">+ Polar H-Bonds</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">Atomic Overlaps (0 = Clean)</div>
+        <div class="metric-value" id="m-clashes">0</div>
+        <div class="metric-sub" id="m-clashes-sub">Clean Fit</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-box">
+        <h4>📊 5-Axis Biophysical Fit Radar</h4>
+        <div id="radar-chart" style="height: 310px;"></div>
+      </div>
+      <div class="chart-box">
+        <h4>🤝 Interactive 2D Amino Acid Touch-Map</h4>
+        <div id="heatmap-chart" style="height: 310px;"></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    }
+
+    let state = {
+      preset: "3OGO",
+      paintMode: "Puzzle Shape Mode",
+      lastPayload: null,
+      preserveContactSelection: false
+    };
+
+    function selectPreset(presetId, btn) {
+      state.preset = presetId;
+      state.preserveContactSelection = false;
+      document.querySelectorAll(".preset-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("swap-select").selectedIndex = 0;
+      refreshAnalysis();
+    }
+
+    function selectPaintMode(mode, btn) {
+      state.paintMode = mode;
+      state.preserveContactSelection = true;
+      document.querySelectorAll(".paint-pill").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      refreshAnalysis();
+    }
+
+    function onContactOrSwapChange() {
+      state.preserveContactSelection = true;
+      refreshAnalysis();
+    }
+
+    async function refreshAnalysis() {
+      const minPlddt = document.getElementById("plddt-slider").value;
+      const pocketId = document.getElementById("pocket-select").value;
+      const showGhost = document.getElementById("ghost-toggle").checked;
+      const showPartner = document.getElementById("partner-toggle").checked;
+
+      const params = new URLSearchParams({
+        preset: state.preset,
+        min_plddt: minPlddt,
+        pocket_id: pocketId,
+        paint_mode: state.paintMode,
+        show_ghost: showGhost,
+        show_partner: showPartner
+      });
+
+      const contactSel = document.getElementById("contact-select");
+      const swapSel = document.getElementById("swap-select");
+      if (state.preserveContactSelection && contactSel.value) {
+        const [ch, rn] = contactSel.value.split(":");
+        params.set("chain", ch);
+        params.set("resnum", rn);
+      }
+      if (state.preserveContactSelection && swapSel.value) {
+        params.set("swap", swapSel.value);
+      }
+
+      const resp = await fetch(`/api/analyze?${params.toString()}`);
+      const data = await resp.json();
+      if (data.error) {
+        alert("Error: " + data.error);
+        return;
+      }
+      state.lastPayload = data;
+      renderPayload(data);
+    }
+
+    function renderPayload(data) {
+      document.getElementById("page-title").innerText = `🧬 LockKey-Explorer — ${data.metadata.title}`;
+      document.getElementById("story-banner").innerHTML =
+        `<b>Everyday Biology Story:</b> ${data.metadata.story}<br/>` +
+        `<span style="color:#cbd5e1;"><b>What to Look For in 3D:</b> ${data.metadata.what_students_see}</span>`;
+
+      // Populate contact & swap selectors if needed
+      const contactSel = document.getElementById("contact-select");
+      const currentVal = `${data.what_if.selected_chain}:${data.what_if.selected_resnum}`;
+      contactSel.innerHTML = "";
+      data.contact_choices.forEach(item => {
+        const opt = document.createElement("option");
+        opt.value = `${item.chain}:${item.resnum}`;
+        opt.textContent = item.label;
+        if (opt.value === currentVal) opt.selected = true;
+        contactSel.appendChild(opt);
+      });
+
+      const swapSel = document.getElementById("swap-select");
+      if (swapSel.options.length === 0) {
+        data.swap_options.forEach(optName => {
+          const opt = document.createElement("option");
+          opt.value = optName;
+          opt.textContent = optName;
+          swapSel.appendChild(opt);
+        });
+      }
+
+      // Render 3D WebGL iframe
+      const frame = document.getElementById("viewer-frame");
+      frame.srcdoc = data.viewer_html;
+
+      // Render What-If Banner
+      const wi = data.what_if;
+      const banner = document.getElementById("what-if-banner");
+      banner.className = `what-if-banner ${wi.badge_status}`;
+      banner.innerHTML = `🔬 <b>What-If Classroom Experiment:</b> ${wi.badge_summary}<br/><span>${wi.scientific_explanation}</span>`;
+
+      // Render 4 Metric Cards
+      const sc = data.active_scorecard;
+      const isSwapped = wi.original_amino_acid !== wi.new_amino_acid;
+      document.getElementById("m-total").innerText = `${sc.total_puzzle_fit_score.toFixed(1)} / 100`;
+      document.getElementById("m-total-sub").innerText = isSwapped
+        ? `(${wi.score_delta >= 0 ? "+" : ""}${wi.score_delta.toFixed(1)} vs Natural)`
+        : "Optimal Classroom Lock";
+      document.getElementById("m-area").innerText = `${Math.round(sc.contact_surface_area_angstrom2)} Å²`;
+      document.getElementById("m-sb").innerText = `${sc.salt_bridges_formed}`;
+      document.getElementById("m-sb-sub").innerText = `+ ${sc.hydrogen_bonds_formed} Polar H-Bonds`;
+      document.getElementById("m-clashes").innerText = `${sc.atomic_overlaps}`;
+      document.getElementById("m-clashes-sub").innerText =
+        `Clean Fit | Trimmed ${data.trim_stats.trimmed_residues_count} Low-pLDDT Res`;
+
+      // Render 5-Axis Radar Chart
+      const cats = ["3D Shape Lock", "Charge Attraction", "Hydrophobic Match", "Pocket Depth", "AlphaFold Confidence"];
+      const base = data.baseline_scorecard;
+      const baseVals = [
+        base.shape_match_score, base.charge_match_score, base.hydrophobic_stickiness_score,
+        base.pocket_depth_score, base.alphafold_confidence_plddt, base.shape_match_score
+      ];
+      const traces = [{
+        type: "scatterpolar",
+        r: baseVals,
+        theta: [...cats, cats[0]],
+        fill: "toself",
+        name: "Natural Protein",
+        line: { color: "#8b5cf6", width: 2.5 },
+        fillcolor: "rgba(139, 92, 246, 0.28)"
+      }];
+      if (isSwapped) {
+        traces.push({
+          type: "scatterpolar",
+          r: [
+            sc.shape_match_score, sc.charge_match_score, sc.hydrophobic_stickiness_score,
+            sc.pocket_depth_score, sc.alphafold_confidence_plddt, sc.shape_match_score
+          ],
+          theta: [...cats, cats[0]],
+          fill: "toself",
+          name: "After 'What-If' Swap",
+          line: { color: "#ef4444", width: 2.5, dash: "dot" },
+          fillcolor: "rgba(239, 68, 68, 0.20)"
+        });
+      }
+      Plotly.newPlot("radar-chart", traces, {
+        polar: {
+          bgcolor: "rgba(15, 23, 42, 0.6)",
+          radialaxis: { visible: true, range: [0, 100], gridcolor: "#334155", tickfont: { color: "#94a3b8" } },
+          angularaxis: { gridcolor: "#334155", tickfont: { color: "#e2e8f0", size: 11 } }
+        },
+        paper_bgcolor: "rgba(0,0,0,0)",
+        plot_bgcolor: "rgba(0,0,0,0)",
+        margin: { l: 40, r: 40, t: 20, b: 20 },
+        legend: { orientation: "h", y: -0.15, x: 0.5, xanchor: "center", font: { color: "#f8fafc" } }
+      }, { displayModeBar: false, responsive: true });
+
+      // Render 2D Touch-Map Heatmap
+      const hm = data.heatmap;
+      Plotly.newPlot("heatmap-chart", [{
+        type: "heatmap",
+        z: hm.z_matrix,
+        x: hm.x_lock_labels,
+        y: hm.y_key_labels,
+        text: hm.hover_text,
+        hoverinfo: "text",
+        zmin: -1.0,
+        zmax: 1.0,
+        colorscale: [
+          [0.0, "#ef4444"],
+          [0.5, "#1e293b"],
+          [0.75, "#38bdf8"],
+          [1.0, "#facc15"]
+        ]
+      }], {
+        paper_bgcolor: "rgba(0,0,0,0)",
+        plot_bgcolor: "rgba(15, 23, 42, 0.8)",
+        margin: { l: 90, r: 20, t: 15, b: 60 },
+        xaxis: { tickfont: { color: "#e2e8f0", size: 10 } },
+        yaxis: { tickfont: { color: "#e2e8f0", size: 10 } }
+      }, { displayModeBar: false, responsive: true });
+    }
+
+    function downloadStandaloneHTML() {
+      if (!state.lastPayload) return;
+      const blob = new Blob([state.lastPayload.viewer_html], { type: "text/html" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `LockKey_${state.preset}_3D.html`;
+      a.click();
+    }
+
+    function downloadTrimmedPDB() {
+      if (!state.lastPayload) return;
+      const blob = new Blob([state.lastPayload.trimmed_pdb_str], { type: "chemical/x-pdb" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `LockKey_${state.preset}.pdb`;
+      a.click();
+    }
+
+    refreshAnalysis();
+  </script>
+</body>
+</html>
